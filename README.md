@@ -187,6 +187,7 @@ BibTeX (update DOI when available):
   year    = {2026},
   doi     = {TBD}
 }
+```
 
 ---
 
