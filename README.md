@@ -14,32 +14,6 @@ Rare cell populations (<1%) can be missed by standard clustering pipelines. Palm
 - **Multi-view kNN graph construction** (Palma / Gini / Fano feature views)
 - **Weighted graph fusion** to balance rare-cell separability and global manifold stability
 - **Local refinement** within major clusters to split rare / ultra-rare subtypes
-- **Scalability** to atlas-sized data via sparse computations and optional CUDA acceleration for kNN construction (as reported in the paper)
-
----
-
-## Method overview (high level)
-
-PalmaClust follows this pipeline:
-
-1. **Preprocessing / QC filtering**
-   - Remove low-quality cells and rarely detected genes (thresholds are configurable).
-2. **Gene scoring**
-   - Score genes using **Palma ratio**, **Gini index**, and **Fano factor**.
-   - Apply **LOWESS detrending** to reduce mean-dependent bias before ranking.
-3. **Feature selection**
-   - Select top-ranked genes for each metric, producing three feature sets.
-4. **Multi-view graph construction**
-   - Build one **cell–cell kNN graph** per feature set.
-   - Default similarity in the paper: **Jaccard** on binarized/activated gene features.
-5. **Graph fusion + clustering**
-   - Fuse the graphs with weights into a consensus “mixed” graph.
-   - Run graph clustering (default in paper: **Leiden**).
-6. **Local refinement**
-   - Within each major cluster, construct a refinement graph (paper: truncated SVD + cosine kNN),
-     hybridized with the corresponding subgraph of the global mixed graph.
-7. **Outputs**
-   - Final cluster labels, and (if ground-truth labels are provided) evaluation metrics such as ARI/NMI.
 
 ---
 
@@ -196,27 +170,6 @@ Outputs are written under `output_folder` (created if missing). Depending on you
 
 ---
 
-## Reported benchmarks (from the paper)
-
-The manuscript reports strong rare-cell recovery while maintaining global clustering quality, including:
-
-- **GSE102580 (airway epithelium)**: ionocytes are **29 / 14,163 cells (~0.2%)**
-  - Rare-cell performance: ionocyte **F1 = 0.87**
-  - Global clustering: **ARI = 0.74**, **NMI = 0.71**
-- **GSE94820 (blood myeloid)**: Mono4 is **18 / 1,123 cells (~1.6%)**
-  - Rare-cell performance: Mono4 **F1 = 0.78**
-  - Global clustering: **ARI = 0.66**, **NMI = 0.73**
-
----
-
-## Practical notes / limitations
-
-- **Doublets**: the paper notes PalmaClust can be sensitive to doublets that mimic rare “intermediate” states. Run a doublet-detection tool and filter doublets before PalmaClust.
-- **Rarity prior**: if you expect extremely rare targets (≪1%) vs moderately rare (~1–2%), consider tuning Palma fractions (`palma_upper`, `palma_lower`) and fusion weights.
-- **Reproducibility**: set and record random seeds where applicable (if your pipeline exposes them).
-
----
-
 ## Citation
 
 If you use PalmaClust in your research, please cite:
@@ -234,14 +187,6 @@ BibTeX (update DOI when available):
   year    = {2026},
   doi     = {TBD}
 }
-```
-
----
-
-## License
-
-This repository does not currently include a `LICENSE` file.  
-If you plan to redistribute or build on this code, please add a license or contact the authors/maintainers.
 
 ---
 
