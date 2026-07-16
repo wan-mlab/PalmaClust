@@ -2,7 +2,7 @@
 
 **PalmaClust** is a graph-fusion clustering framework for **robust rare / ultra-rare cell type detection** in scRNA-seq data. It leverages the **Palma ratio** (a tail-sensitive inequality metric) for feature selection and combines it with complementary gene-selection views (Gini index and Fano factor) through **multi-view kNN graph fusion**, followed by **local refinement** to resolve rare subpopulations.
 
-> Paper: *PalmaClust: A graph-fusion framework leveraging the Palma ratio for robust ultra-rare cell type detection in scRNA-seq data* (Bioinformatics, 2026). DOI: **TBD**
+> Paper: *PalmaClust: A graph-fusion framework leveraging the Palma ratio for robust ultra-rare cell type detection in scRNA-seq data* (TBA, 2026). DOI: **TBD**
 
 ---
 
