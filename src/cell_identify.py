@@ -9,6 +9,7 @@ import scipy.sparse as sp
 from .parameters import Parameters
 from .preprocess import preprocess
 from .filter import filter_counts
+from .normalize import maybe_normalize
 from .calc_stat import calc_gene_stats
 from .detrend import detrend
 from .generate_cluster import generate_clusters
@@ -20,6 +21,9 @@ def cell_identify(config_filename:str):
     params = Parameters(config_filename)
     matrix, cells, genes, labels = preprocess(params)
     matrix_f, genes_f, cells_f = filter_counts(params, matrix, genes, cells, False)
+    # QC filtering above ran on raw counts; normalize (if requested) only for
+    # gene stats / feature selection / activation / refinement downstream.
+    matrix_f = maybe_normalize(params, matrix_f)
     gene_stats = calc_gene_stats(params, matrix_f, genes_f)
     gene_stats = detrend(params, gene_stats)
 
@@ -28,6 +32,7 @@ def cell_identify(config_filename:str):
     labels_f = generate_clusters(params, graph, cells_f)
     labels_rf = refine_cluster(params, matrix_f, genes_f, labels_f, band_genes, graph)
     result = pd.DataFrame({"label":labels_rf}, index=cells_f)
+    result.to_csv(os.path.join(params.output_folder, "cluster_output_final.csv"), index=True, header=True)
     tab, gt_breakdown, ari, nmi = compare_clusters_filtered(params, labels_rf, labels, cells_f, cells)
 
 

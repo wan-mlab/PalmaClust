@@ -78,7 +78,7 @@ def blend_select_weighted_sum(
         raise ValueError("No usable metrics found (check weights and column names).")
 
     # ------------- 3) Weighted-sum score on ELIGIBLE genes -------------
-    M = df[cols].to_numpy(dtype=np.float64, copy=False)
+    M = df[cols].to_numpy(dtype=np.float64, copy=True)
     M[~np.isfinite(M)] = -np.inf
     weights = np.asarray(wts, dtype=np.float64)  # scaling doesn’t affect ranks
     combined_eligible = pd.Series(M @ weights, index=df.index, name="weighted_sum_score")

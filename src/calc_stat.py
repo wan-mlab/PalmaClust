@@ -33,14 +33,14 @@ def calc_gene_stats(
     palma_a = np.empty(n_genes, dtype=np.float64)
     fano = np.empty(n_genes, dtype=np.float64)
     idf = np.empty(n_genes, dtype=np.float64)
-    max_counts = np.zeros(n_genes, dtype=np.int64)
+    max_counts = np.zeros(n_genes, dtype=np.float64)
+    truncate = (params.normalize == "none")
 
     for i in range(n_genes):
         s, e = indptr[i], indptr[i + 1]
-        v = data[s:e]  # strictly positive integer counts for gene i
+        v = data[s:e]  # strictly positive counts for gene i
         if e > s:
-            # max from integers
-            max_counts[i] = int(v.max())
+            max_counts[i] = float(int(v.max())) if truncate else float(v.max())
             # exact Gini and Palma from sparse nonzeros + n_cells
             gini[i] = gini_index_sparse_exact(v, n_cells, unbiased=gini_unbiased)
             palma_a[i] = palma_ratio_from_sparse_nonzeros(
@@ -53,8 +53,8 @@ def calc_gene_stats(
         else:
             raise ZeroDivisionError(f"GENE WITH NO EXPRESSIONS: {genes_f[i]}")
 
-    # log2 of integer max counts (optionally with a small eps)
-    log2max = np.log2(max_counts.astype(np.float64) + float(log2_eps))
+    # log2 of the per-gene max (optionally with a small eps)
+    log2max = np.log2(max_counts + float(log2_eps))
     gene_stats = pd.DataFrame({"gini":gini, "palma":palma_a, "fano": fano,
                                "idf": idf,  "log2max": log2max}, index=genes_f)
 

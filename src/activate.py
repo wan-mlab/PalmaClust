@@ -40,7 +40,9 @@ def make_binary(
     X_sel = X_filtered[idx_sel, :]            # (n_feat x n_cells), new object; no full copy
 
     if params.activation == 'binarize':
-        B, zero_cells = jaccard_binary(X_sel, params.jaccard_gamma)
+        B, zero_cells = jaccard_binary(X_sel, params.jaccard_gamma,
+                                       cutoff_mode=params.binarize_cutoff,
+                                       as_int=(params.normalize == "none"))
     elif params.activation == 'arctan':
         B, zero_cells = arctan_transform(X_sel)
     elif params.activation == 'none':
